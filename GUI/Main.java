@@ -6,12 +6,26 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("AES Encryptor and Decryptor");
+        ConfigManager configManager = new ConfigManager();
+        Config config = configManager.getConfig();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
+        Parent root = loader.load();
+        Controller controller = loader.getController();
+        controller.initConfig(config);
+
+
+        primaryStage.setTitle("AES.AES Encryptor and Decryptor");
         primaryStage.setScene(new Scene(root, 500, 275));
         primaryStage.show();
     }
