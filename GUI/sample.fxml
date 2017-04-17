@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
@@ -109,7 +110,10 @@
                             <children>
                                 <Label text="Init Vector" />
                                 <TextField fx:id="textFieldIV" GridPane.columnIndex="2" />
-                                <Button mnemonicParsing="false" onAction="#doChangeIV" text="Change IV"  GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                <HBox spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <Button mnemonicParsing="false" onAction="#doChangeIV" text="Change IV" />
+                                    <Button mnemonicParsing="false" onAction="#doResetIV" text="Reset IV" />
+                                </HBox>
                             </children>
                         </GridPane>
                     </children>

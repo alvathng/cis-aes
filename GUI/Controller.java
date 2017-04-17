@@ -36,6 +36,11 @@ public class Controller {
         strIV = "0";
     }
 
+    @FXML
+    public void initialize() {
+        textFieldIV.setText(strIV);
+    }
+
     public void doChoosePlainTextInEncrypt(ActionEvent actionEvent) {
         filePlainTextInEncrypt = fileChooser.showOpenDialog(stage);
         textFieldEncryptPlainText.setText(filePlainTextInEncrypt.getAbsolutePath());
@@ -75,6 +80,10 @@ public class Controller {
     }
 
     public void doChangeIV(ActionEvent actionEvent) {
+        strIV = textFieldIV.getText();
+    }
 
+    public void doResetIV(ActionEvent actionEvent) {
+        textFieldIV.setText(strIV);
     }
 }
