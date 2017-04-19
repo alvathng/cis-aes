@@ -34,6 +34,8 @@ public class Controller {
     @FXML TextField textFieldIV;
     @FXML Label textFieldEncryptKeyInfo;
     @FXML Label textFieldDecryptKeyInfo;
+    @FXML Label textFieldEncryptInputInfo;
+    @FXML Label textFieldDecryptInputInfo;
 
     File filePlainTextInEncrypt;
     File fileKeyInEncrypt;
@@ -62,6 +64,14 @@ public class Controller {
     @FXML
     public void initialize() {
 
+    }
+
+    private String humanReadableByteCount(long bytes) {
+        int unit = 1000;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = "kMGTPE".charAt(exp-1) + "";
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
     private boolean checkKeyValid(String key) {
@@ -97,10 +107,21 @@ public class Controller {
         }
     }
 
+    private String generateInputInfo(File file) {
+        String type;
+        try {
+            type = Files.probeContentType(file.toPath());
+        } catch (IOException e) {
+            type = "Unrecognized";
+        }
+        return String.format("File size: %s , File type: %s", humanReadableByteCount(file.length()), type);
+    }
+
     public void doChoosePlainTextInEncrypt(ActionEvent actionEvent) {
         filePlainTextInEncrypt = fileChooser.showOpenDialog(stage);
         if (filePlainTextInEncrypt != null) {
             textFieldEncryptPlainText.setText(filePlainTextInEncrypt.getAbsolutePath());
+            textFieldEncryptInputInfo.setText(generateInputInfo(filePlainTextInEncrypt));
         }
     }
 
@@ -138,6 +159,7 @@ public class Controller {
         fileCipherTextInDecrypt = fileChooser.showOpenDialog(stage);
         if (fileCipherTextInDecrypt != null) {
             textFieldDecryptCipherText.setText(fileCipherTextInDecrypt.getAbsolutePath());
+            textFieldDecryptInputInfo.setText(generateInputInfo(fileCipherTextInDecrypt));
         }
     }
 
@@ -236,8 +258,9 @@ public class Controller {
         textFieldDecryptPlainText.setText("");
         textFieldDecryptKey.setText("");
         textFieldDecryptCipherText.setText("");
-        textFieldIV.setText("");
         textFieldEncryptKeyInfo.setText("");
         textFieldDecryptKeyInfo.setText("");
+        textFieldEncryptInputInfo.setText("");
+        textFieldDecryptInputInfo.setText("");
     }
 }

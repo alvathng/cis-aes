@@ -25,8 +25,8 @@ public class Main extends Application {
         controller.initConfig(config);
 
 
-        primaryStage.setTitle("AES.AES Encryptor and Decryptor");
-        primaryStage.setScene(new Scene(root, 500, 275));
+        primaryStage.setTitle("AES Encryptor and Decryptor");
+        primaryStage.setScene(new Scene(root, 500, 300));
         primaryStage.show();
     }
 

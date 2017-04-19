@@ -30,6 +30,7 @@
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -38,16 +39,17 @@
                           </rowConstraints>
                            <children>
                               <Label text="Plaintext" />
-                              <Label text="Key" GridPane.rowIndex="1" />
-                              <Label text="Save Ciphertext to" GridPane.rowIndex="3" />
+                              <Label text="Key" GridPane.rowIndex="2" />
+                              <Label text="Save Ciphertext to" GridPane.rowIndex="4" />
                               <TextField fx:id="textFieldEncryptPlainText" GridPane.columnIndex="2" disable="true" />
-                              <TextField fx:id="textFieldEncryptKey" GridPane.columnIndex="2" GridPane.rowIndex="1" disable="true" />
-                              <TextField fx:id="textFieldEncryptCipherText" GridPane.columnIndex="2" GridPane.rowIndex="3" disable="true" />
+                              <TextField fx:id="textFieldEncryptKey" GridPane.columnIndex="2" GridPane.rowIndex="2" disable="true" />
+                              <TextField fx:id="textFieldEncryptCipherText" GridPane.columnIndex="2" GridPane.rowIndex="4" disable="true" />
                               <Button mnemonicParsing="false" onAction="#doChoosePlainTextInEncrypt" text="File" GridPane.columnIndex="4" />
-                              <Button mnemonicParsing="false" onAction="#doChooseKeyInEncrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" onAction="#doChooseCipherTextInEncrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" onAction="#doEncrypt" text="Encrypt" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#doChooseKeyInEncrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#doChooseCipherTextInEncrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#doEncrypt" text="Encrypt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                               <Label fx:id="textFieldEncryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-font-size: 10;"/>
+                              <Label fx:id="textFieldEncryptInputInfo" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-font-size: 10;"/>
                            </children>
                         </GridPane>
                      </children>
@@ -67,6 +69,7 @@
                             </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -75,16 +78,17 @@
                             </rowConstraints>
                             <children>
                                 <Label text="Ciphertext" />
-                                <Label text="Key" GridPane.rowIndex="1" />
-                                <Label text="Save Plaintext to" GridPane.rowIndex="3" />
+                                <Label text="Key" GridPane.rowIndex="2" />
+                                <Label text="Save Plaintext to" GridPane.rowIndex="4" />
                                 <TextField fx:id="textFieldDecryptCipherText" GridPane.columnIndex="2" disable="true" />
-                                <TextField fx:id="textFieldDecryptKey" GridPane.columnIndex="2" GridPane.rowIndex="1" disable="true" />
-                                <TextField fx:id="textFieldDecryptPlainText" GridPane.columnIndex="2" GridPane.rowIndex="3" disable="true" />
+                                <TextField fx:id="textFieldDecryptKey" GridPane.columnIndex="2" GridPane.rowIndex="2" disable="true" />
+                                <TextField fx:id="textFieldDecryptPlainText" GridPane.columnIndex="2" GridPane.rowIndex="4" disable="true" />
                                 <Button mnemonicParsing="false" onAction="#doChooseCipherTextInDecrypt" text="File" GridPane.columnIndex="4" />
-                                <Button mnemonicParsing="false" onAction="#doChooseKeyInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                                <Button mnemonicParsing="false" onAction="#doChoosePlainTextInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                                <Button mnemonicParsing="false" onAction="#doDecrypt" text="Decrypt" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                                <Label fx:id="textFieldDecryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-font-size: 10;"/>
+                                <Button mnemonicParsing="false" onAction="#doChooseKeyInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                                <Button mnemonicParsing="false" onAction="#doChoosePlainTextInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                                <Button mnemonicParsing="false" onAction="#doDecrypt" text="Decrypt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                                <Label fx:id="textFieldDecryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="3" style="-fx-font-size: 10;"/>
+                                <Label fx:id="textFieldDecryptInputInfo" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-font-size: 10;"/>
                             </children>
                         </GridPane>
                     </children>
