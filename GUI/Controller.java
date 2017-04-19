@@ -10,6 +10,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Controller {
 
@@ -58,32 +59,44 @@ public class Controller {
 
     public void doChoosePlainTextInEncrypt(ActionEvent actionEvent) {
         filePlainTextInEncrypt = fileChooser.showOpenDialog(stage);
-        textFieldEncryptPlainText.setText(filePlainTextInEncrypt.getAbsolutePath());
+        if (filePlainTextInEncrypt != null) {
+            textFieldEncryptPlainText.setText(filePlainTextInEncrypt.getAbsolutePath());
+        }
     }
 
     public void doChooseKeyInEncrypt(ActionEvent actionEvent) {
         fileKeyInEncrypt = fileChooser.showOpenDialog(stage);
-        textFieldEncryptKey.setText(fileKeyInEncrypt.getAbsolutePath());
+        if (fileKeyInEncrypt != null) {
+            textFieldEncryptKey.setText(fileKeyInEncrypt.getAbsolutePath());
+        }
     }
 
     public void doChooseCipherTextInEncrypt(ActionEvent actionEvent) {
         fileCipherTextInEncrypt = fileChooser.showSaveDialog(stage);
-        textFieldEncryptCipherText.setText(fileCipherTextInEncrypt.getAbsolutePath());
+        if (fileCipherTextInEncrypt != null) {
+            textFieldEncryptCipherText.setText(fileCipherTextInEncrypt.getAbsolutePath());
+        }
     }
 
     public void doChoosePlainTextInDecrypt(ActionEvent actionEvent) {
         filePlainTextInDecrypt = fileChooser.showSaveDialog(stage);
-        textFieldDecryptPlainText.setText(filePlainTextInEncrypt.getAbsolutePath());
+        if (filePlainTextInDecrypt != null) {
+            textFieldDecryptPlainText.setText(filePlainTextInDecrypt.getAbsolutePath());
+        }
     }
 
     public void doChooseKeyInDecrypt(ActionEvent actionEvent) {
         fileKeyInDecrypt = fileChooser.showOpenDialog(stage);
-        textFieldDecryptKey.setText(fileKeyInDecrypt.getAbsolutePath());
+        if (fileKeyInDecrypt != null) {
+            textFieldDecryptKey.setText(fileKeyInDecrypt.getAbsolutePath());
+        }
     }
 
     public void doChooseCipherTextInDecrypt(ActionEvent actionEvent) {
         fileCipherTextInDecrypt = fileChooser.showOpenDialog(stage);
-        textFieldDecryptCipherText.setText(fileCipherTextInDecrypt.getAbsolutePath());
+        if (fileCipherTextInDecrypt != null) {
+            textFieldDecryptCipherText.setText(fileCipherTextInDecrypt.getAbsolutePath());
+        }
     }
 
     public void doChangeIV(ActionEvent actionEvent) {
@@ -97,26 +110,48 @@ public class Controller {
     }
 
     public void doEncrypt(ActionEvent actionEvent) {
-        aesService.encryptFile(filePlainTextInEncrypt, fileKeyInEncrypt, fileCipherTextInEncrypt);
+        try {
+            aesService.encryptFile(filePlainTextInEncrypt, fileKeyInEncrypt, fileCipherTextInEncrypt);
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText("Encrypt Success");
-        alert.setContentText(
-                String.format("Encryption success, encrypted file is outputted to %s",
-                fileCipherTextInEncrypt.getAbsolutePath()));
-        alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
-        alert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Encrypt Success");
+            alert.setContentText(
+                    String.format("Encryption success, encrypted file is outputted to %s",
+                            fileCipherTextInEncrypt.getAbsolutePath()));
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Encrypt failed");
+            alert.setContentText("Encryption failed, File IO error found");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+        }
     }
 
     public void doDecrypt(ActionEvent actionEvent) {
-        aesService.decryptFile(fileCipherTextInDecrypt, fileKeyInDecrypt, filePlainTextInDecrypt);
+        try {
+            aesService.decryptFile(fileCipherTextInDecrypt, fileKeyInDecrypt, filePlainTextInDecrypt);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Decrypt Success");
+            alert.setContentText(
+                    String.format("Decryption success, decrypted file is outputted to %s",
+                            filePlainTextInDecrypt.getAbsolutePath()));
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Decrypt failed");
+            alert.setContentText("Decryption failed, File IO error found");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Decrypt failed");
+            alert.setContentText("Decryption failed, Nonce used might be invalid");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+        }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText("Decrypt Success");
-        alert.setContentText(
-                String.format("Decryption success, decrypted file is outputted to %s",
-                        filePlainTextInDecrypt.getAbsolutePath()));
-        alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
-        alert.showAndWait();
     }
 }

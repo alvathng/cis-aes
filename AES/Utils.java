@@ -49,4 +49,13 @@ public class Utils {
 
 		return result;
 	}
+
+	public static byte[] hexToByte(String str) {
+		byte[] b = new byte[(str.length() / 2)];
+		for (int i = 0; i < (str.length() / 2); i++) {
+			int dec = Integer.parseInt("" + str.charAt(2 * i) + str.charAt(2 * i + 1), 16);
+			b[i] = (byte)dec;
+		}
+		return b;
+	}
 }

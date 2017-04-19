@@ -1,6 +1,6 @@
 package AES;
 
-public class AES implements AESService {
+public class AES {
 	private static int[][] mixColumnsSbox = {
 			{0x2, 0x3, 0x1, 0x1},
 			{0x1, 0x2, 0x3, 0x1},
@@ -240,8 +240,11 @@ public class AES implements AESService {
 		return result;
 	}
 
-	private static byte[] unpadding(byte[] b) {
+	private static byte[] unpadding(byte[] b) throws Exception {
 		int unpadding = b[b.length - 1] & 0xff;
+		if (unpadding > 16) {
+			throw new Exception("Decryption Failed");
+		}
 		byte[] result = new byte[b.length - unpadding];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = b[i];
@@ -326,11 +329,11 @@ public class AES implements AESService {
 		return plaintext;
 	}
 
-	public static byte[] encrypt(byte[] plaintext, byte[] key) {
+	public static byte[] encrypt(byte[] plaintext, byte[] key, byte[] nonce) {
 		plaintext = padding(plaintext);
 		byte[] ciphertext = new byte[plaintext.length];
 		int round = plaintext.length / 16;
-		byte[] nonce = key;
+
 		for (int i = 0; i < round; i++) {
 			nonce = Utils.increment(nonce);
 			byte[] nonceCipher = encryptAES(nonce, key);
@@ -341,10 +344,9 @@ public class AES implements AESService {
 		return ciphertext;
 	}
 
-	public static byte[] decrypt(byte[] ciphertext, byte[] key) {
+	public static byte[] decrypt(byte[] ciphertext, byte[] key, byte[] nonce) throws Exception {
 		byte[] plaintext = new byte[ciphertext.length];
 		int round = ciphertext.length / 16;
-		byte[] nonce = Config.;
 		for (int i = 0; i < round; i++) {
 			nonce = Utils.increment(nonce);
 			byte[] nonceCipher = encryptAES(nonce, key);
@@ -352,25 +354,8 @@ public class AES implements AESService {
 				plaintext[16 * i + j] = (byte)((nonceCipher[j] & 0xff) ^ (ciphertext[16 * i + j] & 0xff));
 			}
 		}
-
 		plaintext = unpadding(plaintext);
 		return plaintext;
 	}
 
-	private static byte[] hexToByte(String str) {
-		byte[] b = new byte[(str.length / 2)];
-		for (int i = 0; i < (str.length / 2); i++) {
-			int dec = Integer.parseInt("" + str.charAt(2 * i) + str.charAt(2 * i + 1), 16);
-			b[i] = (byte)dec;
-		}
-		return b;
-	}
-
-	public static void encryptFile(File plaintext, File key, File output) {
-		
-	}
-
-    public static void decryptFile(File ciphertext, File key, File output) {
-
-    }
 }

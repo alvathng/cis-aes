@@ -1,8 +1,10 @@
 package AES;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public interface AESService {
-    static void encryptFile(File plaintext, File key, File output);
-    static void decryptFile(File ciphertext, File key, File output);
+    void encryptFile(File plaintext, File key, File output) throws IOException;
+    void decryptFile(File ciphertext, File key, File output) throws Exception;
 }

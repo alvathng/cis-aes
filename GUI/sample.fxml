@@ -76,12 +76,12 @@
                                 <Label text="Ciphertext" />
                                 <Label text="Key" GridPane.rowIndex="1" />
                                 <Label text="Save Plaintext to" GridPane.rowIndex="3" />
-                                <TextField fx:id="textFieldDecryptPlainText" GridPane.columnIndex="2" />
+                                <TextField fx:id="textFieldDecryptCipherText" GridPane.columnIndex="2" />
                                 <TextField fx:id="textFieldDecryptKey" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                <TextField fx:id="textFieldDecryptCipherText" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                <Button mnemonicParsing="false" onAction="#doChoosePlainTextInDecrypt" text="File" GridPane.columnIndex="4" />
+                                <TextField fx:id="textFieldDecryptPlainText" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                <Button mnemonicParsing="false" onAction="#doChooseCipherTextInDecrypt" text="File" GridPane.columnIndex="4" />
                                 <Button mnemonicParsing="false" onAction="#doChooseKeyInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                                <Button mnemonicParsing="false" onAction="#doChooseCipherTextInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                                <Button mnemonicParsing="false" onAction="#doChoosePlainTextInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="3" />
                                 <Button mnemonicParsing="false" onAction="#doDecrypt" text="Decrypt" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                             </children>
                         </GridPane>
@@ -108,7 +108,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Label text="Init Vector" />
+                                <Label text="Nonce" />
                                 <TextField fx:id="textFieldIV" GridPane.columnIndex="2" />
                                 <HBox spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                     <Button mnemonicParsing="false" onAction="#doChangeIV" text="Change IV" />
