@@ -1,6 +1,7 @@
 package GUI;
 
 import AES.AESService;
+import AES.AESServiceImpl;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -37,12 +38,17 @@ public class Controller {
         stage = new Stage();
         fileChooser = new FileChooser();
         configManager = new ConfigManager();
-        aesService = null; //todo
+        aesService = new AESServiceImpl();
+    }
+
+    private void setIV(byte[] iv) {
+        this.textFieldIV.setText(Converter.byteToHexString(iv));
+        ((AESServiceImpl) this.aesService).setNonce(iv);
     }
 
     public void initConfig(Config config) {
         this.config = config;
-        this.textFieldIV.setText(Converter.byteToHexString(config.getIV()));
+        this.setIV(config.getIV());
     }
 
     @FXML
@@ -83,6 +89,7 @@ public class Controller {
     public void doChangeIV(ActionEvent actionEvent) {
         this.config.setIV(Converter.stringToByteArray(textFieldIV.getText()));
         this.configManager.saveConfig(this.config);
+        this.setIV(Converter.stringToByteArray(textFieldIV.getText()));
     }
 
     public void doResetIV(ActionEvent actionEvent) {
