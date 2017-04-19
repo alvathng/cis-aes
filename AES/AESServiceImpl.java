@@ -3,6 +3,9 @@ package AES;
 import java.io.*;
 import java.nio.file.Files;
 
+/**
+ * Implementation of Contract with GUI
+ */
 public class AESServiceImpl implements AESService {
 
     private byte[] nonce;
