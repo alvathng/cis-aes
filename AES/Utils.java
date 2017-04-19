@@ -1,5 +1,8 @@
 package AES;
 
+/**
+ * Utilities functions used for various purpose
+ */
 public class Utils {
 	/* galois GF(2^8) irreducible polynomial */
 	private static int irreducible = 0x1b;

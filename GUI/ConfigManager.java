@@ -68,6 +68,10 @@ public class ConfigManager {
         }
     }
 
+    /**
+     * Config Factory
+     * @return config
+     */
     public static Config newConfig() {
         Random random = new Random();
         byte[] seed = new byte[Constants.NONCE_LENGTH / 8];

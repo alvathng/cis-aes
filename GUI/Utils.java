@@ -5,6 +5,11 @@ package GUI;
  */
 public class Utils {
 
+    /**
+     * Array of bytes to hexadecimal numbers in string
+     * @param bytes
+     * @return hexadecimal numbers
+     */
     public static String byteToHexString(byte[] bytes) {
         StringBuilder hex = new StringBuilder(bytes.length * 2);
         for (byte b : bytes) {
@@ -13,6 +18,11 @@ public class Utils {
         return hex.toString();
     }
 
+    /**
+     * Hexadecimal numbers in string to array of Byte
+     * @param s
+     * @return array of bytes
+     */
     public static byte[] stringToByteArray(String s) {
         if (s.length() % 2 == 1) {
             s = "0" + s;

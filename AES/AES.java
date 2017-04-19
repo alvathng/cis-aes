@@ -1,5 +1,8 @@
 package AES;
 
+/**
+ * AES main algorithm
+ */
 public class AES {
 	/* mix column multiplier, usage (mixColumnSbox * state), * = multiplication in galois field */
 	private static int[][] mixColumnsSbox = {
