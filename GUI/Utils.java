@@ -1,5 +1,8 @@
 package GUI;
 
+/**
+ * Utilities function used for various purpose in GUI
+ */
 public class Utils {
 
     public static String byteToHexString(byte[] bytes) {

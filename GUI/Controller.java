@@ -14,6 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+/**
+ * Main GUI Controller
+ */
 public class Controller {
 
     final Stage stage;

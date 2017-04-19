@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Handle tasks concerning reading and writing config files
+ */
 public class ConfigManager {
 
     private Config parseConfig(File file) throws Exception {

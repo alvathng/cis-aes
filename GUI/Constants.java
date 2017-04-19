@@ -1,7 +1,7 @@
 package GUI;
 
 /**
- * Created by adam on 17/04/17.
+ * Constants. Self-explained
  */
 public class Constants {
     public static final String CONFIG_FILE_PATH = "aes-config.txt";

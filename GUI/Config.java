@@ -1,6 +1,8 @@
 package GUI;
 
-
+/**
+ * Config model class, represent configurations for this program
+ */
 public class Config {
 
     private byte[] IV;

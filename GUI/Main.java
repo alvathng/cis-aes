@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Main GUI Application
+ */
 public class Main extends Application {
 
     @Override
