@@ -6,10 +6,10 @@ public class Utils {
 
 	public static byte galoisMultiplication(byte a, byte b) {
 		int ans = 0;
-		int curr = a;
+		int curr = a & 0xff;
 
 		for (int i = 0; i < 8; i++) {
-			if ((b & (1 << i)) > 0) {
+			if (((b & (1 << i)) & 0xff) > 0) {
 				ans ^= curr;
 			}
 
@@ -39,7 +39,7 @@ public class Utils {
 		for (int i = result.length - 1; i >= 0; i--) {
 			ans = (result[i] & 0xff) + ans;
 			if (ans > 255) {
-				result[i] = (byte)0xff;
+				result[i] = (byte)0x00;
 				ans -= 255;
 			} else {
 				result[i] = (byte)ans;

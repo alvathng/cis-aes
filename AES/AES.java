@@ -31,7 +31,7 @@ public class AES {
 		{0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a},
 		{0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e},
 		{0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf},
-		{0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x1}
+		{0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}
 	};
 
 	private static int[][] invSbox = {
@@ -57,9 +57,17 @@ public class AES {
 		0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d
 	};
 
-	private static int getNumberOfRound(byte[] key) {
+	private static int getNumberOfRound(byte[] key) throws Exception {
 		int len = key.length * 8;
-		return (len == 128 ? 10 : len == 192 ? 12 : 14);
+		if (len == 128) {
+			return 10;
+		} else if (len == 192) {
+			return 12;
+		} else if (len == 256) {
+			return 14;
+		} else {
+			throw new Exception("Wrong key length");
+		}
 	}
 
 	private static byte subByte(byte b) {
@@ -117,7 +125,7 @@ public class AES {
 		return result;
 	}
 
-	private static byte[][] generateKeys(byte[] key) {
+	private static byte[][] generateKeys(byte[] key) throws Exception {
 		int round = getNumberOfRound(key);
 		byte[][] keys = new byte[round + 1][16];
 
@@ -252,21 +260,11 @@ public class AES {
 		return result;
 	}
 
-	public static void print(byte[][] state) {
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 4; i++) {
-				System.out.printf("%02x", state[i][j] & 0xff);
-			}
-			System.out.print(" ");
-		}
-		System.out.println();
-	}
-
-	public static byte[] encryptAES(byte[] plaintext, byte[] key) {
+	public static byte[] encryptAES(byte[] plaintext, byte[] key) throws Exception {
 		int round = getNumberOfRound(key);
 		byte[][] keys = generateKeys(key);
 		byte[] ciphertext = new byte[plaintext.length];
-		
+
 		for (int i = 0; i < plaintext.length; i += 16) {
 			byte[] curr = new byte[16];
 			for (int j = 0; j < 16; j++) {
@@ -295,7 +293,7 @@ public class AES {
 		return ciphertext;
 	}
 
-	public static byte[] decryptAES(byte[] ciphertext, byte[] key) {
+	public static byte[] decryptAES(byte[] ciphertext, byte[] key) throws Exception {
 		int round = getNumberOfRound(key);
 		byte[][] keys = generateKeys(key);
 		byte[] plaintext = new byte[ciphertext.length];
@@ -329,17 +327,16 @@ public class AES {
 		return plaintext;
 	}
 
-	public static byte[] encrypt(byte[] plaintext, byte[] key, byte[] nonce) {
+	public static byte[] encrypt(byte[] plaintext, byte[] key, byte[] nonce) throws Exception {
 		plaintext = padding(plaintext);
 		byte[] ciphertext = new byte[plaintext.length];
 		int round = plaintext.length / 16;
-
 		for (int i = 0; i < round; i++) {
-			nonce = Utils.increment(nonce);
 			byte[] nonceCipher = encryptAES(nonce, key);
 			for (int j = 0; j < 16; j++) {
 				ciphertext[16 * i + j] = (byte)((nonceCipher[j] & 0xff) ^ (plaintext[16 * i + j] & 0xff));
 			}
+			nonce = Utils.increment(nonce);
 		}
 		return ciphertext;
 	}
@@ -348,14 +345,13 @@ public class AES {
 		byte[] plaintext = new byte[ciphertext.length];
 		int round = ciphertext.length / 16;
 		for (int i = 0; i < round; i++) {
-			nonce = Utils.increment(nonce);
 			byte[] nonceCipher = encryptAES(nonce, key);
 			for (int j = 0; j < 16; j++) {
 				plaintext[16 * i + j] = (byte)((nonceCipher[j] & 0xff) ^ (ciphertext[16 * i + j] & 0xff));
 			}
+			nonce = Utils.increment(nonce);
 		}
 		plaintext = unpadding(plaintext);
 		return plaintext;
 	}
-
 }

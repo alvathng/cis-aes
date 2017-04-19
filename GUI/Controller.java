@@ -126,6 +126,12 @@ public class Controller {
             alert.setContentText("Encryption failed, File IO error found");
             alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
             alert.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Encrypt failed");
+            alert.setContentText("Encryption failed, Wrong length of key");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
         }
     }
 

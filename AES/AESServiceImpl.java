@@ -13,11 +13,10 @@ public class AESServiceImpl implements AESService {
     }
 
     @Override
-    public void encryptFile(File plaintext, File key, File output) throws IOException {
+    public void encryptFile(File plaintext, File key, File output) throws Exception {
         byte[] plainTextBytes = Files.readAllBytes(plaintext.toPath());
         byte[] keyBytes = readKey(key);
         byte[] nonceBytes = getNonce().clone();
-
         byte[] cipherTextBytes =  AES.encrypt(plainTextBytes, keyBytes, nonceBytes);
         Files.write(output.toPath(), cipherTextBytes);
     }
