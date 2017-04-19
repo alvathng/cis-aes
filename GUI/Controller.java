@@ -5,12 +5,14 @@ import AES.AESServiceImpl;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class Controller {
 
@@ -27,6 +29,8 @@ public class Controller {
     @FXML TextField textFieldDecryptKey;
     @FXML TextField textFieldDecryptCipherText;
     @FXML TextField textFieldIV;
+    @FXML Label textFieldEncryptKeyInfo;
+    @FXML Label textFieldDecryptKeyInfo;
 
     File filePlainTextInEncrypt;
     File fileKeyInEncrypt;
@@ -57,6 +61,15 @@ public class Controller {
 
     }
 
+    private String generateKeyInfo(File fileKey) {
+        try {
+            String key = Files.readAllLines(fileKey.toPath()).get(0);
+            return String.format("Key: %s\nKey Length: %d bit", key, key.length() * 4);
+        } catch (IOException e) {
+            return "Key invalid";
+        }
+    }
+
     public void doChoosePlainTextInEncrypt(ActionEvent actionEvent) {
         filePlainTextInEncrypt = fileChooser.showOpenDialog(stage);
         if (filePlainTextInEncrypt != null) {
@@ -68,6 +81,7 @@ public class Controller {
         fileKeyInEncrypt = fileChooser.showOpenDialog(stage);
         if (fileKeyInEncrypt != null) {
             textFieldEncryptKey.setText(fileKeyInEncrypt.getAbsolutePath());
+            textFieldEncryptKeyInfo.setText(generateKeyInfo(fileKeyInEncrypt));
         }
     }
 
@@ -89,6 +103,7 @@ public class Controller {
         fileKeyInDecrypt = fileChooser.showOpenDialog(stage);
         if (fileKeyInDecrypt != null) {
             textFieldDecryptKey.setText(fileKeyInDecrypt.getAbsolutePath());
+            textFieldDecryptKeyInfo.setText(generateKeyInfo(fileKeyInDecrypt));
         }
     }
 
