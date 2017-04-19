@@ -11,13 +11,19 @@ import java.util.Scanner;
 
 public class ConfigManager {
 
-    private Config parseConfig(File file) throws FileNotFoundException {
+    private Config parseConfig(File file) throws Exception {
         Map<String, String> configMap = new HashMap<>();
         Scanner scanner = new Scanner(file);
 
         while(scanner.hasNextLine()) {
             String[] s = scanner.nextLine().split(":");
-            configMap.put(s[0].trim(), s[1].trim());
+            if (s.length > 0) {
+                configMap.put(s[0].trim(), s[1].trim());
+            }
+        }
+
+        if (!configMap.containsKey(Constants.CONFIG_KEY_IV)) {
+            throw new Exception("Config file does not contains IV");
         }
 
         Config config = new Config();
@@ -32,7 +38,7 @@ public class ConfigManager {
         if (file.isFile()) {
             try {
                 config = parseConfig(file);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 config = ConfigManager.newConfig();
                 saveConfig(config);
             }
