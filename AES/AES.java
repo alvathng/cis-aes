@@ -1,6 +1,7 @@
 package AES;
 
 public class AES {
+	/* mix column multiplier, usage (mixColumnSbox * state), * = multiplication in galois field */
 	private static int[][] mixColumnsSbox = {
 			{0x2, 0x3, 0x1, 0x1},
 			{0x1, 0x2, 0x3, 0x1},
@@ -8,6 +9,7 @@ public class AES {
 			{0x3, 0x1, 0x1, 0x2}
 		};
 
+	/* inverse mix column multiplier, usage (invMixColumnSbox * state), * = multiplication in galois field */
 	private static int[][] invMixColumnsSbox = {
 		{0x0e, 0x0b, 0x0d, 0x09},
 		{0x09, 0x0e, 0x0b, 0x0d},
@@ -15,6 +17,7 @@ public class AES {
 		{0x0b, 0x0d, 0x09, 0x0e}
 	};
 
+	/* AES SBox */
 	private static int[][] sbox = {
 		{0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76},
 		{0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0},
@@ -34,6 +37,7 @@ public class AES {
 		{0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}
 	};
 
+	/* AES inverse SBox */
 	private static int[][] invSbox = {
 		{0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb},
 		{0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb},
@@ -53,10 +57,18 @@ public class AES {
 		{0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d}
 	};
 
+	/* rcon for key expansion */
 	private static int[] rcon = {
 		0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d
 	};
 
+	/**
+	 * getNumberOfRound, get number of AES round (according to key length)
+	 *
+	 * @param key
+	 * @return int, number of round
+	 * @throws Exception, if key length is not one of the following {128, 192, 256}
+	 */
 	private static int getNumberOfRound(byte[] key) throws Exception {
 		int len = key.length * 8;
 		if (len == 128) {
@@ -70,16 +82,37 @@ public class AES {
 		}
 	}
 
+	/**
+	 * subByte, subByte using AES SBox
+	 * @param b, a byte from state block
+	 * @return byte
+	 */
 	private static byte subByte(byte b) {
 		int idx = b & 0xff;
 		return (byte)sbox[idx >> 4][idx & 0x0f];
 	}
 
+	/**
+	 * invSubByte, subByte using AES SBox
+	 * @param b, a byte from state block
+	 * @return byte
+	 */
 	private static byte invSubByte(byte b) {
 		int idx = b & 0xff;
 		return (byte)invSbox[idx >> 4][idx & 0x0f];
 	}
 
+	/**
+	 * getState, convert data byte[16] to AES state byte[4][4]
+	 * @param p, the data
+	 * @return AES state byte[4][4]
+	 * {d0, d1, d2, d3, d4, ....} =>
+	 * 		{
+	 * 		  	{d0, d4, d8, d12},
+	 * 		  	{d1, d5, d9, d13},
+	 * 		  	...
+	 * 		}
+	 */
 	private static byte[][] getState(byte[] p) {
 		byte[][] state = new byte[4][4];
 		for (int j = 0; j < 4; j++) {
@@ -90,6 +123,17 @@ public class AES {
 		return state;
 	}
 
+	/**
+	 * getByte, convert data AES state byte[4][4] to byte[16]
+	 * @param p, AES state
+	 * @return byte data byte[16]
+	 * 	{
+	 * 	  	{d0, d4, d8, d12},
+	 * 	  	{d1, d5, d9, d13},
+	 * 	  	...
+	 * 	}
+	 * => {d0, d1, d2, d3, d4, ....}
+	 */
 	private static byte[] getByte(byte[][] state) {
 		byte[] result = new byte[16];
 		for (int j = 0; j < 4; j++) {
@@ -100,6 +144,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * subWord, do SubWord in AES key expansion, basically will substitute each word using SBox
+	 * @param w
+	 * @return
+	 */
 	private static byte[] subWord(byte[] w) {
 		byte[] result = new byte[4];
 		for (int i = 0; i < 4; i++) {
@@ -108,6 +157,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * do RotWord in AES key expansion
+	 * @param w
+	 * @return
+	 */
 	private static byte[] rotWord(byte[] w) {
 		byte[] result = new byte[4];
 		result[0] = w[1];
@@ -117,6 +171,12 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * xor 2 array of byte (byte[])
+	 * @param a
+	 * @param b
+	 * @return byte[]
+	 */
 	private static byte[] xor(byte[] a, byte[] b) {
 		byte[] result = new byte[4];
 		for (int i = 0; i < 4; i++) {
@@ -125,6 +185,12 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * generateKey using AES key expansion algorithm
+	 * @param key, key for round[0]
+	 * @return key[][], key[i] is 16 bytes of round ith key
+	 * @throws Exception, when key length is invalid
+	 */
 	private static byte[][] generateKeys(byte[] key) throws Exception {
 		int round = getNumberOfRound(key);
 		byte[][] keys = new byte[round + 1][16];
@@ -160,6 +226,11 @@ public class AES {
 		return keys;
 	}
 
+	/**
+	 * subByte, will substitute each byte using AES Sbox
+	 * @param state
+	 * @return byte[][]
+	 */
 	private static byte[][] subBytes(byte[][] state) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -170,6 +241,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * invSubByte, will substitute each byte using AES invSbox
+	 * @param state
+	 * @return
+	 */
 	private static byte[][] invSubBytes(byte[][] state) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -180,6 +256,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * shiftRows, do AES ShiftRows step
+	 * @param state
+	 * @return byte[][]
+	 */
 	private static byte[][] shiftRows(byte[][] state) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -190,6 +271,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * invShiftRows, do AES InvShiftRows step
+	 * @param state
+	 * @return byte[][]
+	 */
 	private static byte[][] invShiftRows(byte[][] state) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -200,6 +286,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * mix column, will do matrix multiplication on invMixColumnSBox and AES state block array
+	 * @param state
+	 * @return byte[][]
+	 */
 	private static byte[][] mixColumns(byte[][] state) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -213,6 +304,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * inverse mix column, will do matrix multiplication on invMixColumnSBox and AES state block array
+	 * @param state
+	 * @return byte[][]
+	 */
 	private static byte[][] invMixColumns(byte[][] state) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -226,6 +322,12 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * add round key, will use addition in galois field (basically xor operation)
+	 * @param state, byte[4][4]
+	 * @param key, byte[4][4]
+	 * @return byte[4][4]
+	 */
 	private static byte[][] addRoundKey(byte[][] state, byte[][] key) {
 		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -236,6 +338,11 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * padding, use PKCS#7 to have padding up to 16 byte blocks
+	 * @param b, byte[]
+	 * @return result, byte[] data with padding
+	 */
 	private static byte[] padding(byte[] b) {
 		int padding = 16 - (b.length % 16);
 		byte[] result = new byte[b.length + padding];
@@ -248,6 +355,12 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * unpadding, use PKCS#7 to have padding up to 16 byte blocks
+	 * @param b, byte[]
+	 * @return byte[], data with no padding
+	 * @throws Exception
+	 */
 	private static byte[] unpadding(byte[] b) throws Exception {
 		int unpadding = b[b.length - 1] & 0xff;
 		if (unpadding > 16) {
@@ -260,6 +373,13 @@ public class AES {
 		return result;
 	}
 
+	/**
+	 * AES block encryption
+	 * @param plaintext, byte[]
+	 * @param key, byte[]
+	 * @return byte[], ciphertext
+	 * @throws Exception
+	 */
 	public static byte[] encryptAES(byte[] plaintext, byte[] key) throws Exception {
 		int round = getNumberOfRound(key);
 		byte[][] keys = generateKeys(key);
@@ -293,6 +413,13 @@ public class AES {
 		return ciphertext;
 	}
 
+	/**
+	 * AES block decryption
+	 * @param ciphertext, byte[]
+	 * @param key, byte[]
+	 * @return byte[], plaintext
+	 * @throws Exception
+	 */
 	public static byte[] decryptAES(byte[] ciphertext, byte[] key) throws Exception {
 		int round = getNumberOfRound(key);
 		byte[][] keys = generateKeys(key);
@@ -327,6 +454,14 @@ public class AES {
 		return plaintext;
 	}
 
+	/**
+	 * AES block encryption with PKCS#7 encryption and CTR mode
+	 * @param plaintext, byte[]
+	 * @param key, byte[]
+	 * @param nonce, byte[]
+	 * @return byte[] ciphertext
+	 * @throws Exception
+	 */
 	public static byte[] encrypt(byte[] plaintext, byte[] key, byte[] nonce) throws Exception {
 		plaintext = padding(plaintext);
 		byte[] ciphertext = new byte[plaintext.length];
@@ -341,6 +476,14 @@ public class AES {
 		return ciphertext;
 	}
 
+	/**
+	 * AES block decryption with PKCS#7 encryption and CTR mode
+	 * @param ciphertext, byte[]
+	 * @param key, byte[]
+	 * @param nonce, byte[]
+	 * @return byte[] plaintext
+	 * @throws Exception
+	 */
 	public static byte[] decrypt(byte[] ciphertext, byte[] key, byte[] nonce) throws Exception {
 		byte[] plaintext = new byte[ciphertext.length];
 		int round = ciphertext.length / 16;

@@ -1,9 +1,16 @@
 package AES;
-import java.util.Arrays;
 
 public class Utils {
+	/* galois GF(2^8) irreducible polynomial */
 	private static int irreducible = 0x1b;
 
+
+	/**
+	 * do galois multiplication
+	 * @param a
+	 * @param b
+	 * @return
+	 */
 	public static byte galoisMultiplication(byte a, byte b) {
 		int ans = 0;
 		int curr = a & 0xff;
@@ -25,10 +32,21 @@ public class Utils {
 		return (byte)ans;
 	}
 
+	/**
+	 * do galois addition
+	 * @param a
+	 * @param b
+	 * @return byte
+	 */
 	public static byte galoisAddition(byte a, byte b) {
 		return (byte)((a & 0xff) ^ (b & 0xff));
 	}
 
+	/**
+	 * increment byte array by one
+	 * @param b
+	 * @return byte[]
+	 */
 	public static byte[] increment(byte[] b) {
 		byte[] result = new byte[b.length];
 		for (int i = 0; i < result.length; i++) {
@@ -50,6 +68,11 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * convert hexadecimal String to byte[]
+	 * @param str
+	 * @return byte[]
+	 */
 	public static byte[] hexToByte(String str) {
 		byte[] b = new byte[(str.length() / 2)];
 		for (int i = 0; i < (str.length() / 2); i++) {
