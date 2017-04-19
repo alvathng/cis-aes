@@ -117,8 +117,8 @@
                                 <Label text="Nonce" />
                                 <TextField fx:id="textFieldIV" GridPane.columnIndex="2" />
                                 <HBox spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                    <Button mnemonicParsing="false" onAction="#doChangeIV" text="Change IV" />
-                                    <Button mnemonicParsing="false" onAction="#doResetIV" text="Reset IV" />
+                                    <Button mnemonicParsing="false" onAction="#doChangeIV" text="Change Nonce" />
+                                    <Button mnemonicParsing="false" onAction="#doResetIV" text="Reset Nonce" />
                                 </HBox>
                             </children>
                         </GridPane>
