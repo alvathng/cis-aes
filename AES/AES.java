@@ -1,6 +1,6 @@
 package AES;
 
-public class AES {
+public class AES implements AESService {
 	private static int[][] mixColumnsSbox = {
 			{0x2, 0x3, 0x1, 0x1},
 			{0x1, 0x2, 0x3, 0x1},
@@ -57,90 +57,103 @@ public class AES {
 		0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d
 	};
 
-	private static int getNumberOfRound(String key) {
-		int len = key.length() * 4;
+	private static int getNumberOfRound(byte[] key) {
+		int len = key.length * 8;
 		return (len == 128 ? 10 : len == 192 ? 12 : 14);
 	}
 
-	private static int subByte(int b) {
-		return sbox[b >> 4][b & 0x0f];
+	private static byte subByte(byte b) {
+		int idx = b & 0xff;
+		return (byte)sbox[idx >> 4][idx & 0x0f];
 	}
 
-	private static int invSubByte(int b) {
-		return invSbox[b >> 4][b & 0x0f];	
+	private static byte invSubByte(byte b) {
+		int idx = b & 0xff;
+		return (byte)invSbox[idx >> 4][idx & 0x0f];
 	}
 
-	private static int[][] getState(String p) {
-		int[][] state = new int[4][4];
+	private static byte[][] getState(byte[] p) {
+		byte[][] state = new byte[4][4];
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
-				state[i][j] = Integer.parseInt(p.substring(2 * (4 * j + i), 2 * (4 * j + i) + 2), 16);
+				state[i][j] = p[4 * j + i];
 			}
 		}
 		return state;
 	}
 
-	private static String getCipher(int[][] state) {
-		String cipher = "";
+	private static byte[] getByte(byte[][] state) {
+		byte[] result = new byte[16];
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 4; i++) {
-				cipher += String.format("%02x", state[i][j]);
+				result[4 * j + i] = state[i][j];
 			}
 		}
-		return cipher;
+		return result;
 	}
 
-	private static long subWord(long w) {
-		return (((long)subByte((int)((w & 0xff000000L) >> 24)) << 24)) |
-			   (((long)subByte((int)((w & 0x00ff0000) >> 16)) << 16)) |
-			   (((long)subByte((int)((w & 0x0000ff00) >> 8)) << 8)) |
-			   ((long)subByte((int)(w & 0x000000ffL)));
+	private static byte[] subWord(byte[] w) {
+		byte[] result = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			result[i] = subByte(w[i]);
+		}
+		return result;
 	}
 
-	private static long rotWord(long w) {
-		return (((w & 0x00ff0000) >> 16) << 24) |
-			   (((w & 0x0000ff00) >> 8) << 16) |
-			   ((w & 0x000000ff) << 8) |
-			   ((w >> 24));
+	private static byte[] rotWord(byte[] w) {
+		byte[] result = new byte[4];
+		result[0] = w[1];
+		result[1] = w[2];
+		result[2] = w[3];
+		result[3] = w[0];
+		return result;
 	}
 
-	private static String[] generateKeys(String key) {
+	private static byte[] xor(byte[] a, byte[] b) {
+		byte[] result = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			result[i] = (byte)((a[i] & 0xff) ^ (b[i] & 0xff));
+		}
+		return result;
+	}
+
+	private static byte[][] generateKeys(byte[] key) {
 		int round = getNumberOfRound(key);
-		String[] keys = new String[round + 1];
+		byte[][] keys = new byte[round + 1][16];
 
-		int nk = (key.length() * 4) / 32;
-		long[] w = new long[4 * (round + 1)];
+		int nk = key.length * 8 / 32;
+		byte[][] w = new byte[4 * (round + 1)][4];
 
 		for (int i = 0; i < nk; i++) {
-			w[i] = 0;
-			for (int j = 0; j < 8; j++) {
-				w[i] <<= 4;
-				w[i] += Long.parseLong("" + key.charAt(8 * i + j), 16);
+			for (int j = 0; j < 4; j++) {
+				w[i][j] = key[4 * i + j];
 			}
 		}
 
 		for (int i = nk; i < 4 * (round + 1); i++) {
-			long temp = w[i - 1];
+			byte[] temp = w[i - 1];
 			if (i % nk == 0) {
-				temp = subWord(rotWord(temp)) ^ ((long)rcon[i / nk] << 24L);
+				byte[] rc = {(byte)rcon[i / nk], 0, 0, 0};
+				temp = xor(subWord(rotWord(temp)), rc);
 			} else if (nk > 6 && i % nk == 4) {
 				temp = subWord(temp);
 			}
-			w[i] = w[i - nk] ^ (long)temp;
+			w[i] = xor(w[i - nk], temp);
 		}
 
 		for (int i = 0; i < round + 1; i++) {
-			keys[i] = String.format("%08x", w[4 * i]) +
-					  String.format("%08x", w[4 * i + 1]) +
-					  String.format("%08x", w[4 * i + 2]) +
-					  String.format("%08x", w[4 * i + 3]);
+			for (int j = 0; j < 4; j++) {
+				for (int k = 0; k < 4; k++) {
+					keys[i][4 * j + k] = w[4 * i + j][k];
+				}
+			}
 		}
 
 		return keys;
 	}
 
-	private static int[][] subBytes(int[][] state) {
-		int[][] result = new int[4][4];
+	private static byte[][] subBytes(byte[][] state) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				result[i][j] = subByte(state[i][j]);
@@ -149,8 +162,8 @@ public class AES {
 		return result;
 	}
 
-	private static int[][] invSubBytes(int[][] state) {
-		int[][] result = new int[4][4];
+	private static byte[][] invSubBytes(byte[][] state) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				result[i][j] = invSubByte(state[i][j]);
@@ -159,8 +172,8 @@ public class AES {
 		return result;
 	}
 
-	private static int[][] shiftRows(int[][] state) {
-		int[][] result = new int[4][4];
+	private static byte[][] shiftRows(byte[][] state) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				result[i][Math.floorMod(j - i, 4)] = state[i][j];
@@ -169,8 +182,8 @@ public class AES {
 		return result;
 	}
 
-	private static int[][] invShiftRows(int[][] state) {
-		int[][] result = new int[4][4];
+	private static byte[][] invShiftRows(byte[][] state) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				result[i][j] = state[i][Math.floorMod(j - i, 4)];
@@ -179,12 +192,12 @@ public class AES {
 		return result;
 	}
 
-	private static int[][] mixColumns(int[][] state) {
-		int[][] result = new int[4][4];
+	private static byte[][] mixColumns(byte[][] state) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 4; k++) {
-					int mul = Utils.galoisMultiplication(mixColumnsSbox[i][k], state[k][j]);
+					byte mul = Utils.galoisMultiplication((byte)mixColumnsSbox[i][k], state[k][j]);
 					result[i][j] = Utils.galoisAddition(result[i][j], mul);
 				}
 			}
@@ -192,12 +205,12 @@ public class AES {
 		return result;
 	}
 
-	private static int[][] invMixColumns(int[][] state) {
-		int[][] result = new int[4][4];
+	private static byte[][] invMixColumns(byte[][] state) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 4; k++) {
-					int mul = Utils.galoisMultiplication(invMixColumnsSbox[i][k], state[k][j]);
+					byte mul = Utils.galoisMultiplication((byte)invMixColumnsSbox[i][k], state[k][j]);
 					result[i][j] = Utils.galoisAddition(result[i][j], mul);
 				}
 			}
@@ -205,8 +218,8 @@ public class AES {
 		return result;
 	}
 
-	private static int[][] addRoundKey(int[][] state, int[][] key) {
-		int[][] result = new int[4][4];
+	private static byte[][] addRoundKey(byte[][] state, byte[][] key) {
+		byte[][] result = new byte[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				result[i][j] = Utils.galoisAddition(state[i][j], key[i][j]);
@@ -215,18 +228,50 @@ public class AES {
 		return result;
 	}
 
-	public static String encrypt(String plaintext, String key) {
-		int round = getNumberOfRound(key);
-		String[] keys = generateKeys(key);
-		String ciphertext = "";
-		// TODO CTR method
-		// TODO do padding
+	private static byte[] padding(byte[] b) {
+		int padding = 16 - (b.length % 16);
+		byte[] result = new byte[b.length + padding];
+		for (int i = 0; i < b.length; i++) {
+			result[i] = b[i];
+		}
+		for (int i = 0; i < padding; i++) {
+			result[b.length + i] = (byte)padding;
+		}
+		return result;
+	}
 
-		int i = 0;
-		while (i < plaintext.length()) {
-			int[][] state = getState(plaintext);
-			state = addRoundKey(state, getState(keys[0]));
+	private static byte[] unpadding(byte[] b) {
+		int unpadding = b[b.length - 1] & 0xff;
+		byte[] result = new byte[b.length - unpadding];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = b[i];
+		}
+		return result;
+	}
+
+	public static void print(byte[][] state) {
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < 4; i++) {
+				System.out.printf("%02x", state[i][j] & 0xff);
+			}
+			System.out.print(" ");
+		}
+		System.out.println();
+	}
+
+	public static byte[] encryptAES(byte[] plaintext, byte[] key) {
+		int round = getNumberOfRound(key);
+		byte[][] keys = generateKeys(key);
+		byte[] ciphertext = new byte[plaintext.length];
 		
+		for (int i = 0; i < plaintext.length; i += 16) {
+			byte[] curr = new byte[16];
+			for (int j = 0; j < 16; j++) {
+				curr[j] = plaintext[i + j];
+			}
+			byte[][] state = getState(curr);
+			state = addRoundKey(state, getState(keys[0]));
+
 			for (int r = 1; r < round; r++) {
 				state = subBytes(state);
 				state = shiftRows(state);
@@ -237,28 +282,32 @@ public class AES {
 			state = subBytes(state);
 			state = shiftRows(state);
 			state = addRoundKey(state, getState(keys[round]));
-			
-			ciphertext += getCipher(state);
-			i += 32;
+
+			byte[] result = getByte(state);
+			for (int j = 0; j < 16; j++) {
+				ciphertext[i + j] = result[j];
+			}
 		}
 
 		return ciphertext;
 	}
 
-	public static String decrypt(String ciphertext, String key) {
+	public static byte[] decryptAES(byte[] ciphertext, byte[] key) {
 		int round = getNumberOfRound(key);
-		String[] keys = generateKeys(key);
-		String plaintext = "";
-		// TODO CTR method
-		// TODO do padding
+		byte[][] keys = generateKeys(key);
+		byte[] plaintext = new byte[ciphertext.length];
+		
 
-		int i = 0;
-		while (i < ciphertext.length()) {
-			int[][] state = getState(ciphertext);
+		for (int i = 0; i < ciphertext.length; i += 16) {
+			byte[] curr = new byte[16];
+			for (int j = 0; j < 16; j++) {
+				curr[j] = ciphertext[i + j];
+			}
+			byte[][] state = getState(curr);
 			state = addRoundKey(state, getState(keys[round]));
 			state = invShiftRows(state);
 			state = invSubBytes(state);
-		
+
 			for (int r = round - 1; r >= 1; r--) {
 				state = addRoundKey(state, getState(keys[r]));
 				state = invMixColumns(state);
@@ -267,21 +316,61 @@ public class AES {
 			}
 
 			state = addRoundKey(state, getState(keys[0]));
-			
-			plaintext += getCipher(state);
-			i += 32;
+
+			byte[] result = getByte(state);
+			for (int j = 0; j < 16; j++) {
+				plaintext[i + j] = result[j];
+			}
 		}
 
 		return plaintext;
 	}
 
-	public static void main(String[] args) {
-		String plaintext = "3243f6a8885a308d313198a2e0370734";
-		String key =  "2b7e151628aed2a6abf7158809cf4f3c";
-		String ciphertext = encrypt(plaintext, key);
-
-		System.out.println(plaintext);
-		System.out.println(ciphertext);
-		System.out.println(decrypt(ciphertext, key));
+	public static byte[] encrypt(byte[] plaintext, byte[] key) {
+		plaintext = padding(plaintext);
+		byte[] ciphertext = new byte[plaintext.length];
+		int round = plaintext.length / 16;
+		byte[] nonce = key;
+		for (int i = 0; i < round; i++) {
+			nonce = Utils.increment(nonce);
+			byte[] nonceCipher = encryptAES(nonce, key);
+			for (int j = 0; j < 16; j++) {
+				ciphertext[16 * i + j] = (byte)((nonceCipher[j] & 0xff) ^ (plaintext[16 * i + j] & 0xff));
+			}
+		}
+		return ciphertext;
 	}
+
+	public static byte[] decrypt(byte[] ciphertext, byte[] key) {
+		byte[] plaintext = new byte[ciphertext.length];
+		int round = ciphertext.length / 16;
+		byte[] nonce = Config.;
+		for (int i = 0; i < round; i++) {
+			nonce = Utils.increment(nonce);
+			byte[] nonceCipher = encryptAES(nonce, key);
+			for (int j = 0; j < 16; j++) {
+				plaintext[16 * i + j] = (byte)((nonceCipher[j] & 0xff) ^ (ciphertext[16 * i + j] & 0xff));
+			}
+		}
+
+		plaintext = unpadding(plaintext);
+		return plaintext;
+	}
+
+	private static byte[] hexToByte(String str) {
+		byte[] b = new byte[(str.length / 2)];
+		for (int i = 0; i < (str.length / 2); i++) {
+			int dec = Integer.parseInt("" + str.charAt(2 * i) + str.charAt(2 * i + 1), 16);
+			b[i] = (byte)dec;
+		}
+		return b;
+	}
+
+	public static void encryptFile(File plaintext, File key, File output) {
+		
+	}
+
+    public static void decryptFile(File ciphertext, File key, File output) {
+
+    }
 }
