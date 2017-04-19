@@ -1,6 +1,6 @@
 package GUI;
 
-public class Converter {
+public class Utils {
 
     public static String byteToHexString(byte[] bytes) {
         StringBuilder hex = new StringBuilder(bytes.length * 2);
@@ -11,6 +11,10 @@ public class Converter {
     }
 
     public static byte[] stringToByteArray(String s) {
+        if (s.length() % 2 == 1) {
+            s = "0" + s;
+        }
+
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {

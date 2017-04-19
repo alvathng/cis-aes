@@ -1,7 +1,6 @@
 package GUI;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class ConfigManager {
         }
 
         Config config = new Config();
-        config.setIV(Converter.stringToByteArray(configMap.get(Constants.CONFIG_KEY_IV)));
+        config.setIV(Utils.stringToByteArray(configMap.get(Constants.CONFIG_KEY_IV)));
 
         return config;
     }
@@ -51,7 +50,7 @@ public class ConfigManager {
 
     public void saveConfig(Config config) {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s:%s\n", Constants.CONFIG_KEY_IV, Converter.byteToHexString(config.getIV())));
+        sb.append(String.format("%s:%s\n", Constants.CONFIG_KEY_IV, Utils.byteToHexString(config.getIV())));
 
         try {
             File file = new File(Constants.CONFIG_FILE_PATH);

@@ -52,7 +52,7 @@ public class Controller {
     }
 
     private void setIV(byte[] iv) {
-        this.textFieldIV.setText(Converter.byteToHexString(iv));
+        this.textFieldIV.setText(Utils.byteToHexString(iv));
         ((AESServiceImpl) this.aesService).setNonce(iv);
     }
 
@@ -77,6 +77,10 @@ public class Controller {
     private boolean checkKeyValid(String key) {
         return (key.matches("^[0-9a-fA-F]+$") &&
                 (key.length() == (128 / 4) || key.length() == (192 / 4) || key.length() == (256 / 4)));
+    }
+
+    private boolean checkIVValid(String iv) {
+        return (iv.matches("^[0-9a-fA-F]+$"));
     }
 
     private String generateKeyInfoEncrypt(File fileKey) {
@@ -164,13 +168,22 @@ public class Controller {
     }
 
     public void doChangeIV(ActionEvent actionEvent) {
-        this.config.setIV(Converter.stringToByteArray(textFieldIV.getText()));
-        this.configManager.saveConfig(this.config);
-        this.setIV(Converter.stringToByteArray(textFieldIV.getText()));
+        String newIV = textFieldIV.getText();
+        if (checkIVValid(newIV)) {
+            this.config.setIV(Utils.stringToByteArray(textFieldIV.getText()));
+            this.configManager.saveConfig(this.config);
+            this.setIV(Utils.stringToByteArray(textFieldIV.getText()));
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Change Nonce Failed");
+            alert.setContentText("Please input Hexadecimal numbers");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+        }
     }
 
     public void doResetIV(ActionEvent actionEvent) {
-        this.textFieldIV.setText(Converter.byteToHexString(config.getIV()));
+        this.textFieldIV.setText(Utils.byteToHexString(config.getIV()));
     }
 
     public void doEncrypt(ActionEvent actionEvent) {
