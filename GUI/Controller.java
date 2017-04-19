@@ -22,6 +22,9 @@ public class Controller {
     final AESService aesService;
     Config config;
 
+    boolean isKeyEncryptValid;
+    boolean isKeyDecryptValid;
+
     @FXML TextField textFieldEncryptPlainText;
     @FXML TextField textFieldEncryptKey;
     @FXML TextField textFieldEncryptCipherText;
@@ -61,10 +64,34 @@ public class Controller {
 
     }
 
-    private String generateKeyInfo(File fileKey) {
+    private boolean checkKeyValid(String key) {
+        return (key.matches("^[0-9a-fA-F]+$") &&
+                (key.length() == (128 / 4) || key.length() == (192 / 4) || key.length() == (256 / 4)));
+    }
+
+    private String generateKeyInfoEncrypt(File fileKey) {
         try {
             String key = Files.readAllLines(fileKey.toPath()).get(0);
-            return String.format("Key: %s\nKey Length: %d bit", key, key.length() * 4);
+            isKeyEncryptValid = checkKeyValid(key);
+            if (isKeyEncryptValid) {
+                return String.format("Key: %s\nKey Length: %d bit", key, key.length() * 4);
+            } else {
+                return "Key invalid";
+            }
+        } catch (IOException e) {
+            return "Key invalid";
+        }
+    }
+
+    private String generateKeyInfoDecrypt(File fileKey) {
+        try {
+            String key = Files.readAllLines(fileKey.toPath()).get(0);
+            isKeyDecryptValid = checkKeyValid(key);
+            if (isKeyDecryptValid) {
+                return String.format("Key: %s\nKey Length: %d bit", key, key.length() * 4);
+            } else {
+                return "Key invalid";
+            }
         } catch (IOException e) {
             return "Key invalid";
         }
@@ -81,7 +108,7 @@ public class Controller {
         fileKeyInEncrypt = fileChooser.showOpenDialog(stage);
         if (fileKeyInEncrypt != null) {
             textFieldEncryptKey.setText(fileKeyInEncrypt.getAbsolutePath());
-            textFieldEncryptKeyInfo.setText(generateKeyInfo(fileKeyInEncrypt));
+            textFieldEncryptKeyInfo.setText(generateKeyInfoEncrypt(fileKeyInEncrypt));
         }
     }
 
@@ -103,7 +130,7 @@ public class Controller {
         fileKeyInDecrypt = fileChooser.showOpenDialog(stage);
         if (fileKeyInDecrypt != null) {
             textFieldDecryptKey.setText(fileKeyInDecrypt.getAbsolutePath());
-            textFieldDecryptKeyInfo.setText(generateKeyInfo(fileKeyInDecrypt));
+            textFieldDecryptKeyInfo.setText(generateKeyInfoDecrypt(fileKeyInDecrypt));
         }
     }
 
@@ -125,6 +152,15 @@ public class Controller {
     }
 
     public void doEncrypt(ActionEvent actionEvent) {
+        if (filePlainTextInEncrypt == null || fileKeyInEncrypt == null || fileCipherTextInEncrypt == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Missing Values!");
+            alert.setContentText("Encryption failed, all necessary fields are not filled");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+            return;
+        }
+
         try {
             aesService.encryptFile(filePlainTextInEncrypt, fileKeyInEncrypt, fileCipherTextInEncrypt);
 
@@ -152,6 +188,15 @@ public class Controller {
     }
 
     public void doDecrypt(ActionEvent actionEvent) {
+        if (filePlainTextInDecrypt == null || fileKeyInDecrypt == null || fileCipherTextInDecrypt == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Missing Values!");
+            alert.setContentText("Decryption failed, all necessary fields are not filled");
+            alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
+            alert.showAndWait();
+            return;
+        }
+
         try {
             aesService.decryptFile(fileCipherTextInDecrypt, fileKeyInDecrypt, filePlainTextInDecrypt);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
