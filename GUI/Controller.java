@@ -148,6 +148,7 @@ public class Controller {
             alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
             alert.showAndWait();
         }
+        clearAll();
     }
 
     public void doDecrypt(ActionEvent actionEvent) {
@@ -173,6 +174,25 @@ public class Controller {
             alert.getDialogPane().setStyle("-fx-pref-height: 200px;");
             alert.showAndWait();
         }
+        clearAll();
+    }
 
+    public void clearAll() {
+        filePlainTextInEncrypt = null;
+        fileKeyInEncrypt = null;
+        fileCipherTextInEncrypt = null;
+        filePlainTextInDecrypt = null;
+        fileKeyInDecrypt = null;
+        fileCipherTextInDecrypt = null;
+
+        textFieldEncryptPlainText.setText("");
+        textFieldEncryptKey.setText("");
+        textFieldEncryptCipherText.setText("");
+        textFieldDecryptPlainText.setText("");
+        textFieldDecryptKey.setText("");
+        textFieldDecryptCipherText.setText("");
+        textFieldIV.setText("");
+        textFieldEncryptKeyInfo.setText("");
+        textFieldDecryptKeyInfo.setText("");
     }
 }
