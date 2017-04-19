@@ -48,8 +48,8 @@
                               <Button mnemonicParsing="false" onAction="#doChooseKeyInEncrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                               <Button mnemonicParsing="false" onAction="#doChooseCipherTextInEncrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="4" />
                               <Button mnemonicParsing="false" onAction="#doEncrypt" text="Encrypt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                              <Label fx:id="textFieldEncryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-font-size: 10;"/>
-                              <Label fx:id="textFieldEncryptInputInfo" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-font-size: 10;"/>
+                              <Label fx:id="textFieldEncryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="3" alignment="TOP_LEFT" style="-fx-font-size: 10;"/>
+                              <Label fx:id="textFieldEncryptInputInfo" GridPane.columnIndex="2" GridPane.rowIndex="1" alignment="TOP_LEFT" style="-fx-font-size: 10;"/>
                            </children>
                         </GridPane>
                      </children>
@@ -87,8 +87,8 @@
                                 <Button mnemonicParsing="false" onAction="#doChooseKeyInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                                 <Button mnemonicParsing="false" onAction="#doChoosePlainTextInDecrypt" text="File" GridPane.columnIndex="4" GridPane.rowIndex="4" />
                                 <Button mnemonicParsing="false" onAction="#doDecrypt" text="Decrypt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                                <Label fx:id="textFieldDecryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="3" style="-fx-font-size: 10;"/>
-                                <Label fx:id="textFieldDecryptInputInfo" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-font-size: 10;"/>
+                                <Label fx:id="textFieldDecryptKeyInfo" GridPane.columnIndex="2" GridPane.rowIndex="3" alignment="TOP_LEFT" style="-fx-font-size: 10;"/>
+                                <Label fx:id="textFieldDecryptInputInfo" GridPane.columnIndex="2" GridPane.rowIndex="1" alignment="TOP_LEFT" style="-fx-font-size: 10;"/>
                             </children>
                         </GridPane>
                     </children>
